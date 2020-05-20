@@ -11,16 +11,10 @@
 #include <Windows.h>
 #include <gdiplus.h>
 
-#include <aws/core/Aws.h>
-#include <aws/s3/S3Client.h>
-#include <aws/s3/model/PutObjectRequest.h>
+//#include <aws/core/Aws.h>
+//#include <aws/s3/S3Client.h>
+//#include <aws/s3/model/PutObjectRequest.h>
 
-
-#include <chrono>
-#include <condition_variable>
-#include <fstream>
-#include <iostream>
-#include <mutex>
 
 using namespace Gdiplus;
 
@@ -165,32 +159,32 @@ using namespace Gdiplus;
 //	std::cout << p << std::endl;
 //}
 //
-//LRESULT CALLBACK message_wnd_proc(HWND window_handle, UINT window_message, WPARAM wparam, LPARAM lparam)
-//{
-//	switch (window_message)
-//	{
-//	case WM_CLOSE:
-//		::DestroyWindow(window_handle);
-//		break;
-//
-//	case WM_DESTROY:
-//		::PostQuitMessage(0);
-//		break;
-//
-//	case WM_KEYDOWN:
-//		switch (LOWORD(wparam))
-//		{
-//		case VK_ESCAPE:
-//			::SendMessage(window_handle, WM_CLOSE, 0, 0);
-//			break;
-//		}
-//
-//	default:
-//		return ::DefWindowProc(window_handle, window_message, wparam, lparam);
-//	}
-//
-//	return 0;
-//}
+LRESULT CALLBACK message_wnd_proc(HWND window_handle, UINT window_message, WPARAM wparam, LPARAM lparam)
+{
+	switch (window_message)
+	{
+	case WM_CLOSE:
+		::DestroyWindow(window_handle);
+		break;
+
+	case WM_DESTROY:
+		::PostQuitMessage(0);
+		break;
+
+	case WM_KEYDOWN:
+		switch (LOWORD(wparam))
+		{
+		case VK_ESCAPE:
+			::SendMessage(window_handle, WM_CLOSE, 0, 0);
+			break;
+		}
+
+	default:
+		return ::DefWindowProc(window_handle, window_message, wparam, lparam);
+	}
+
+	return 0;
+}
 
 //void recapture_app_name(HWND window_handle, std::string &captured_app_name)
 //{
@@ -216,106 +210,117 @@ using namespace Gdiplus;
 //	}
 //}
 
-//std::string g_tracked_app_path;
-//
-//std::mutex g_app_switch_mutex;
-//
-//bool on_app_switched(HWND window_handle)
-//{
-//	std::lock_guard<std::mutex> lock_mutex(g_app_switch_mutex);
-//
-//	//GUITHREADINFO gui_thread_info = {};
-//	//gui_thread_info.cbSize = sizeof(GUITHREADINFO);
-//
-//	static std::time_t start_time;
-//	static uint64_t start_timestamp;
-//
-//	DWORD process_id = 0;
-//	DWORD thread_identifier = ::GetWindowThreadProcessId(window_handle, &process_id);
-//	if (process_id)
-//	{
-//		HANDLE process_handle = ::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, process_id);
-//		if (process_handle)
-//		{
-//			char image_path[MAX_PATH * 2] = { 0 };
-//			DWORD buffer_size = sizeof(image_path);
-//
-//			// Get the buffer size required to hold full process image name
-//			// There's no need to check if it managed to get the absolute path of app as we have already zeroed out the buffer
-//			::QueryFullProcessImageNameA(process_handle, 0, image_path, &buffer_size);
-//
-//			if(g_tracked_app_path.compare(image_path) != 0) // User switched to a new application
-//			{
-//				//start_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-//				//auto end_timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - start_timestamp);
-//
-//				if (!g_tracked_app_path.empty()) // We were tracking another application before
-//				{
-//					auto duration_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() -
-//						start_timestamp;
-//					std::cout << "\t\tDuration elapsed: " << duration_milliseconds << " milliseconds" << std::endl;
-//				}
-//
-//				std::cout << "**Active app: " << image_path << " -> Process id: " << process_id << std::endl;
-//				g_tracked_app_path = image_path;
-//				start_timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-//			}
-//			// else user didn't switch to a new application
-//
-//			//std::string app_path(image_path);
-//			//std::transform(app_path.begin(), app_path.end(), app_path.begin(), std::tolower);
-//			//std::string werfault_exe = "werfault.exe";
-//			//if (app_path.find(werfault_exe) != std::string::npos)
-//			//{
-//			//	std::cout << "--------------Fault app detected" << std::endl;
-//			//}
-//
-//			::CloseHandle(process_handle);
-//
-//			//std::string captured_app_name;
-//			//if (::GetGUIThreadInfo(thread_identifier, &gui_thread_info))
-//			//{
-//			//	recapture_app_name(gui_thread_info.hwndActive, captured_app_name);
-//			//	std::transform(captured_app_name.begin(), captured_app_name.end(), captured_app_name.begin(), std::tolower);
-//			//}
-//
-//			//if (captured_app_name.compare(app_path) == 0)
-//			//{
-//			//	std::cout << "*** Captured app name: " << captured_app_name << std::endl;
-//			//}
-//			//else
-//			//{
-//			//	std::cout << "### Captured app names don't match. Two distinct names are: First one: " << app_path << "; Second one: " <<captured_app_name << std::endl;
-//			//}
-//
-//			//std::cout << endl << endl;
-//
-//			return true;
-//		}
-//		else
-//		{
-//			std::cout << "**Unable to open process of process id: " << process_id << std::endl;
-//		}
-//	}
-//	return false;
-//}
+#include <atlbase.h>
+#include <Propkey.h>
 
-//void CALLBACK win_event_callback(
-//	HWINEVENTHOOK win_event_hook,
-//	DWORD window_event,
-//	HWND window_handle,
-//	LONG id_object,
-//	LONG id_child,
-//	DWORD event_thread,
-//	DWORD event_time)
-//{
-//	switch (window_event)
-//	{
-//	case EVENT_SYSTEM_FOREGROUND:
-//		on_app_switched(window_handle);
-//		break;
-//	}
-//}
+std::string g_tracked_app_path;
+
+std::mutex g_app_switch_mutex;
+
+std::wstring get_app_description(const std::wstring& app_path);
+
+bool on_app_switched(HWND window_handle)
+{
+	std::lock_guard<std::mutex> lock_mutex(g_app_switch_mutex);
+
+	//GUITHREADINFO gui_thread_info = {};
+	//gui_thread_info.cbSize = sizeof(GUITHREADINFO);
+
+	static std::time_t start_time;
+	static uint64_t start_timestamp;
+
+	DWORD process_id = 0;
+	DWORD thread_identifier = ::GetWindowThreadProcessId(window_handle, &process_id);
+	if (process_id)
+	{
+		HANDLE process_handle = ::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, process_id);
+		if (process_handle)
+		{
+			char image_path[MAX_PATH * 2] = { 0 };
+			DWORD buffer_size = sizeof(image_path);
+
+			// Get the buffer size required to hold full process image name
+			// There's no need to check if it managed to get the absolute path of app as we have already zeroed out the buffer
+			::QueryFullProcessImageNameA(process_handle, 0, image_path, &buffer_size);
+
+			if(g_tracked_app_path.compare(image_path) != 0) // User switched to a new application
+			{
+				//start_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+				//auto end_timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - start_timestamp);
+
+				if (!g_tracked_app_path.empty()) // We were tracking another application before
+				{
+					auto duration_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() -
+						start_timestamp;
+					std::cout << "\t\tDuration elapsed: " << duration_milliseconds << " milliseconds" << std::endl;
+				}
+				std::wstring app_wide_description;
+				std::string file_path(image_path);
+				std::wstring image_wide_path(file_path.begin(), file_path.end());
+				app_wide_description = get_app_description(image_wide_path);
+				std::string app_description(app_wide_description.begin(), app_wide_description.end());
+
+
+				std::cout << "**Active app: " << image_path << "-> App desc: " << app_description << " -> Process id: " << process_id << std::endl;
+				g_tracked_app_path = image_path;
+				start_timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			}
+			// else user didn't switch to a new application
+
+			//std::string app_path(image_path);
+			//std::transform(app_path.begin(), app_path.end(), app_path.begin(), std::tolower);
+			//std::string werfault_exe = "werfault.exe";
+			//if (app_path.find(werfault_exe) != std::string::npos)
+			//{
+			//	std::cout << "--------------Fault app detected" << std::endl;
+			//}
+
+			::CloseHandle(process_handle);
+
+			//std::string captured_app_name;
+			//if (::GetGUIThreadInfo(thread_identifier, &gui_thread_info))
+			//{
+			//	recapture_app_name(gui_thread_info.hwndActive, captured_app_name);
+			//	std::transform(captured_app_name.begin(), captured_app_name.end(), captured_app_name.begin(), std::tolower);
+			//}
+
+			//if (captured_app_name.compare(app_path) == 0)
+			//{
+			//	std::cout << "*** Captured app name: " << captured_app_name << std::endl;
+			//}
+			//else
+			//{
+			//	std::cout << "### Captured app names don't match. Two distinct names are: First one: " << app_path << "; Second one: " <<captured_app_name << std::endl;
+			//}
+
+			//std::cout << endl << endl;
+
+			return true;
+		}
+		else
+		{
+			std::cout << "**Unable to open process of process id: " << process_id << std::endl;
+		}
+	}
+	return false;
+}
+
+void CALLBACK win_event_callback(
+	HWINEVENTHOOK win_event_hook,
+	DWORD window_event,
+	HWND window_handle,
+	LONG id_object,
+	LONG id_child,
+	DWORD event_thread,
+	DWORD event_time)
+{
+	switch (window_event)
+	{
+	case EVENT_SYSTEM_FOREGROUND:
+		on_app_switched(window_handle);
+		break;
+	}
+}
 
 //#include <TlHelp32.h>
 
@@ -492,134 +497,318 @@ using namespace Gdiplus;
 #define SAFE_DELETE_PTR_ARRAY(POINTER) {delete [] POINTER;}
 
 
-int get_encoder_clsid(const WCHAR* format, CLSID* encoder_clsid) {
-	UINT number_of_encoders = 0;
-	UINT size = 0;
 
-	GetImageEncodersSize(&number_of_encoders, &size);
-	if (size == 0)
-		return -1;
 
-	ImageCodecInfo* image_codec_info = new ImageCodecInfo[size];
 
-	GetImageEncoders(number_of_encoders, size, image_codec_info);
-	for (UINT j = 0; j < number_of_encoders; ++j) {
-		if (std::wstring(image_codec_info[j].MimeType).compare(format) == 0) {
-			*encoder_clsid = image_codec_info[j].Clsid;
-			SAFE_DELETE_PTR_ARRAY(image_codec_info);
-			return j;
+
+
+
+
+
+
+/*
+
+Take screenshots of multiple displays and save them into different filenames
+
+*/
+
+constexpr wchar_t image_jpeg_mime[] = L"image/jpeg";
+
+#define LOG_ERROR(x) std::wcerr<< x << std::endl;
+#define LOG_INFO(x) std::wcout << x << std::endl;
+
+void get_base64_encoded_data(unsigned char const* bytes_to_encode,
+	unsigned int in_len,
+	std::string& base64_encoded_data) {
+	int i = 0;
+	int j = 0;
+	unsigned char char_array_3[3];
+	unsigned char char_array_4[4];
+
+	static const std::string base64_chars =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"abcdefghijklmnopqrstuvwxyz"
+		"0123456789+/";
+
+	while (in_len--) {
+		char_array_3[i++] = *(bytes_to_encode++);
+		if (i == 3) {
+			char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+			char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+			char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+			char_array_4[3] = char_array_3[2] & 0x3f;
+
+			for (i = 0; (i < 4); i++)
+				base64_encoded_data += base64_chars[char_array_4[i]];
+			i = 0;
 		}
 	}
-	SAFE_DELETE_PTR_ARRAY(image_codec_info);
-	return 0;
+
+	if (i) {
+		for (j = i; j < 3; j++)
+			char_array_3[j] = '\0';
+
+		char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+		char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+		char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+
+		for (j = 0; (j < i + 1); j++)
+			base64_encoded_data += base64_chars[char_array_4[j]];
+
+		while ((i++ < 3))
+			base64_encoded_data += '=';
+	}
 }
 
-void take_screenshot() {
-	HDC source_dc, memory_dc;
-	HBITMAP memory_bitmap;
-	IStream* istream = nullptr;
+HDC m_desktop_dc = nullptr, m_memory_dc = nullptr;
 
+HBITMAP m_memory_bitmap = nullptr;
+
+IStream* m_screenshot_stream = nullptr;
+
+bool internal_capture_screenshot_data(HDC desktop_device_context, HDC memory_dc,
+	int screen_width, int screen_height, int screen_width_virtual, int screen_height_virtual,
+	IStream* screenshot_stream, bool secondary_display, std::string& screenshot_data);
+bool get_encoder_clsid(const wchar_t* format, CLSID* encoder_clsid);
+void free_resources();
+
+bool capture_screenshots() {
+	ULONG_PTR m_gdiplus_token = 0;
 	GdiplusStartupInput gdiplus_startup_input;
-	ULONG_PTR gdiplus_token;
+	if (::GdiplusStartup(&m_gdiplus_token, &gdiplus_startup_input, nullptr) != Gdiplus::Ok) {
+		LOG_ERROR(L"Initializing GDI+ for capturing screenshots");
+		free_resources();
+		return false;
+	}
 
+	// Get the number of monitors attached
 	auto monitor_count = ::GetSystemMetrics(SM_CMONITORS);
-	std::cout << "Number of monitors: " << monitor_count << std::endl;
 
-	HRESULT res = CreateStreamOnHGlobal(nullptr, true, &istream);
-	GdiplusStartup(&gdiplus_token, &gdiplus_startup_input, nullptr);
-	source_dc = ::GetDC(HWND_DESKTOP); // Get the DC of all the monitors
+	// Get the DC of all the monitors
+	m_desktop_dc = ::GetDC(HWND_DESKTOP);
+	if (m_desktop_dc == nullptr) {
+		LOG_ERROR(L"Getting the DC of the desktop");
+		return false;
+	}
 
 	// Get the width and height of the primary monitor
 	int screen_width = GetSystemMetrics(SM_CXSCREEN);
 	int screen_height = GetSystemMetrics(SM_CYSCREEN);
-	int screen_left_coordinate = ::GetSystemMetrics(SM_CXSCREEN);
-	int screen_right_coordinate = ::GetSystemMetrics(SM_CYSCREEN);
-	std::cout << "Height: " << screen_height << ", Width: " << screen_width << std::endl;
-	std::cout << "Left coord: " << screen_left_coordinate << ", right coord: " << screen_right_coordinate << std::endl << std::endl;
 
-	memory_dc = ::CreateCompatibleDC(source_dc);
+	if (FAILED(::CreateStreamOnHGlobal(nullptr, true, &m_screenshot_stream))) {
+		LOG_ERROR(L"Creating stream on HGLOBAL");
+		return false;
+	}
 
-	CLSID encoder_clsid;
+	m_memory_dc = ::CreateCompatibleDC(m_desktop_dc);
 
+	std::string primary_screenshot_data, secondary_screenshot_data;
+
+	// If there are more than one monitors then we capture the screenshots of both the primary and secondary displays but those images
+	// will be stitched together.
 	if (monitor_count > 1) {
+		// Multiple displays detected
+		LOG_INFO(L"Multiple displays detected");
+
 		// Get the width and height of the secondary monitor AKA virtual display
-		int screen_left_coordinate_virtual = ::GetSystemMetrics(SM_XVIRTUALSCREEN);
-		int screen_top_coordinate_virtual = ::GetSystemMetrics(SM_YVIRTUALSCREEN);
 		int screen_width_virtual = ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
 		int screen_height_virtual = ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
-		std::cout << "Virtual height: " << screen_height_virtual << ", Virtual width: " << screen_width_virtual << std::endl;
-		std::cout << "Left coord: " << screen_left_coordinate_virtual << ", right coord: " << screen_top_coordinate_virtual << std::endl << std::endl;
 
-		// Take the screenshot of the secondary display
-		memory_bitmap = ::CreateCompatibleBitmap(source_dc, screen_width_virtual, screen_height_virtual);
-		HBITMAP virtual_old_bitmap = static_cast<HBITMAP>(::SelectObject(memory_dc, memory_bitmap));
-		::BitBlt(memory_dc, 0, 0, screen_width_virtual, screen_height_virtual, source_dc, 0, 0, SRCCOPY);
-
-		Gdiplus::Bitmap virtual_screen_bitmap(memory_bitmap, NULL);
-
-		get_encoder_clsid(L"image/jpeg", &encoder_clsid);
-		if (virtual_screen_bitmap.Save(L"full_desktop.jpeg", &encoder_clsid, NULL) == Gdiplus::Ok) {
-			std::cout << "Virtual jpeg screenshot saved successfully to full_desktop.jpg" << std::endl;
-			if (virtual_screen_bitmap.Save(istream, &encoder_clsid, NULL) == Gdiplus::Ok) {
-				std::cout << "Virtual jpeg screenshot saved successfully to stream" << std::endl;
-			}
+		// Capture the primary desktop screenshot
+		if (!internal_capture_screenshot_data(m_desktop_dc, m_memory_dc,
+			screen_width, screen_height, 0, 0, m_screenshot_stream, false, primary_screenshot_data)) {
+			free_resources();
+			LOG_ERROR(L"Saving primary desktop screenshot into stream");
+			return false;
+		}
+		// Capture the secondary desktop screenshot
+		if (!internal_capture_screenshot_data(m_desktop_dc, m_memory_dc,
+			screen_width, screen_height, screen_width_virtual, screen_height_virtual, m_screenshot_stream, true,
+			secondary_screenshot_data)) {
+			free_resources();
+			LOG_ERROR(L"Saving virtual desktop screenshot into stream");
+			return false;
 		}
 	}
 	else {
-		// Primary desktop's screenshot only
-		memory_bitmap = ::CreateCompatibleBitmap(source_dc, screen_width, screen_height);
-		HBITMAP primary_old_bitmap = static_cast<HBITMAP>(::SelectObject(memory_dc, memory_bitmap));
-		::BitBlt(memory_dc, 0, 0, screen_width, screen_height, source_dc, 0, 0, SRCCOPY);
+		// Single display detected
+		LOG_INFO(L"Single display detected");
 
-		// Take the screenshot of the primary display
-		Gdiplus::Bitmap primary_bitmap(memory_bitmap, NULL);
-		get_encoder_clsid(L"image/jpeg", &encoder_clsid);
-		if (primary_bitmap.Save(L"primary_screen.jpeg", &encoder_clsid, nullptr) == Gdiplus::Ok) {
-			std::cout << "Primary jpeg screenshot saved successfully to screen.jpg" << std::endl;
-			if (primary_bitmap.Save(istream, &encoder_clsid, nullptr) == Gdiplus::Ok) {
-				std::cout << "Primary jpeg screenshot saved successfully to stream" << std::endl << std::endl;
-			}
+		if (!internal_capture_screenshot_data(m_desktop_dc, m_memory_dc,
+			screen_width, screen_height, 0, 0, m_screenshot_stream, false, primary_screenshot_data)) {
+			LOG_ERROR(L"Saving primary desktop screenshot to stream");
+			free_resources();
+			return false;
 		}
 	}
 
-	// Displays secondary monitor's image only
-	//if (monitor_count > 1) {
-	//	// Get the width and height of the secondary monitor AKA virtual display
-	//	int screen_left_coordinate_virtual = ::GetSystemMetrics(SM_XVIRTUALSCREEN);
-	//	int screen_top_coordinate_virtual = ::GetSystemMetrics(SM_YVIRTUALSCREEN);
-	//	int screen_width_virtual = ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
-	//	int screen_height_virtual = ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
-	//	std::cout << "Virtual height: " << screen_height_virtual << ", Virtual width: " << screen_width_virtual << std::endl;
-	//	std::cout << "Left coord: " << screen_left_coordinate_virtual << ", right coord: " << screen_top_coordinate_virtual << std::endl << std::endl;
+	free_resources();
 
-	//	// Take the screenshot of the secondary display
-	//	auto virtual_memory_bitmap = ::CreateCompatibleBitmap(source_dc, screen_width_virtual - screen_width, screen_height_virtual);
-	//	HBITMAP virtual_old_bitmap = static_cast<HBITMAP>(::SelectObject(memory_dc, virtual_memory_bitmap));
-	//	::BitBlt(memory_dc, 0, 0, screen_width_virtual, screen_height_virtual, source_dc, screen_width, 0, SRCCOPY);
-
-	//	// Take the screenshot of the primary display
-	//	Gdiplus::Bitmap virtual_screen_bitmap(virtual_memory_bitmap, NULL);
-
-	//	get_encoder_clsid(L"image/jpeg", &encoder_clsid);
-	//	if (virtual_screen_bitmap.Save(L"virtual_screen.jpeg", &encoder_clsid, NULL) == Gdiplus::Ok) {
-	//		std::cout << "Virtual jpeg screenshot saved successfully to virtual_screen.jpg" << std::endl;
-	//		if (virtual_screen_bitmap.Save(istream, &encoder_clsid, NULL) == Gdiplus::Ok) {
-	//			std::cout << "Virtual jpeg screenshot saved successfully to virtual_screen.jpg" << std::endl;
-	//		}
-	//	}
-	//}
-
-	::DeleteObject(memory_dc);
-	::DeleteObject(memory_bitmap);
-	::ReleaseDC(0, source_dc);
-	istream->Release();
+	return true;
 }
+
+bool get_encoder_clsid(const wchar_t* format, CLSID* encoder_clsid) {
+	uint32_t number_of_encoders = 0;
+	uint32_t total_size_image_codec_info = 0;
+
+	// Get the number of available image encoders
+	if (::GetImageEncodersSize(&number_of_encoders, &total_size_image_codec_info) != Gdiplus::Ok) {
+		LOG_ERROR(L"Getting the image encoders size");
+		return false;
+	}
+	if (total_size_image_codec_info == 0) {
+		LOG_ERROR(L"The total size of the retrieved image codec info is invalid");
+		return false;
+	}
+
+	std::unique_ptr<ImageCodecInfo> image_codec_info(new ImageCodecInfo[total_size_image_codec_info]);
+
+	if (::GetImageEncoders(number_of_encoders, total_size_image_codec_info, image_codec_info.get()) == Gdiplus::Ok) {
+		for (uint32_t encoder_counter = 0; encoder_counter < number_of_encoders; ++encoder_counter) {
+			if (std::wstring(image_codec_info.get()[encoder_counter].MimeType).compare(format) == 0) {
+				*encoder_clsid = image_codec_info.get()[encoder_counter].Clsid;
+				return true;
+			}
+		}
+		LOG_ERROR(L"While processing the image encoders");
+		return false;
+	}
+	LOG_ERROR(L"Getting the image encoders");
+	return false;
+}
+
+// Captures the screenshots of the primary and secondary displays. 
+// Note: To capture a screenshot of secondary display: set screen width to the width of of primary display, 
+// sceen height to the height of secondary display and virtual screen width to the width of secondary display
+bool internal_capture_screenshot_data(HDC desktop_device_context, HDC memory_dc,
+	int screen_width, int screen_height, int screen_width_virtual, int screen_height_virtual,
+	IStream* screenshot_stream, bool secondary_display, std::string& screenshot_data) {
+
+	static constexpr char base64_header[] = "data:image/jpg;base64,";
+
+	CLSID encoder_clsid;
+
+	// Capture the bits of either primary or secondary display
+	HBITMAP memory_bitmap = ::CreateCompatibleBitmap(desktop_device_context,
+		secondary_display ? screen_width_virtual - screen_width : screen_width,
+		secondary_display ? screen_height_virtual : screen_height);
+	::SelectObject(memory_dc, memory_bitmap);
+	::BitBlt(memory_dc, 0, 0,
+		secondary_display ? screen_width_virtual : screen_width,
+		secondary_display ? screen_height_virtual : screen_height, desktop_device_context,
+		secondary_display ? screen_width : 0, 0, SRCCOPY);
+
+	// Lambda function for clean up of this function
+	auto internal_cleanup = [&]() {
+		::DeleteObject(memory_bitmap);
+	};
+
+	Gdiplus::Bitmap screenshot_bitmap(memory_bitmap, false);
+	if (!get_encoder_clsid(image_jpeg_mime, &encoder_clsid)) {
+		internal_cleanup();
+		return false;
+	}
+
+	std::string jpeg_filename;
+	std::string jpeg_filename_base64;
+	if (!secondary_display) {
+		jpeg_filename = "primary_screen.jpeg";
+		jpeg_filename_base64 = "primary_screen_base64.txt";
+	}
+	else {
+		jpeg_filename = "secondary_screen.jpeg";
+		jpeg_filename_base64 = "secondary_screen_base64.txt";
+	}
+
+	if (screenshot_bitmap.Save(screenshot_stream, &encoder_clsid, nullptr) == Gdiplus::Ok) {
+		LOG_INFO(L"Saved JPEG blob to stream");
+
+		static LARGE_INTEGER image_seek_position = { 0 };
+		ULARGE_INTEGER image_size;
+
+		if (!secondary_display) {
+			image_seek_position = { 0 };
+		}
+
+		if (SUCCEEDED(screenshot_stream->Seek(image_seek_position, STREAM_SEEK_CUR, &image_size))) {
+
+			// Allocate memory for the image blob
+			std::unique_ptr<BYTE> image_blob(new BYTE[static_cast<uint32_t>(image_size.LowPart)]);
+			if (!image_blob) {
+				LOG_ERROR(L"Allocating memory for image blob");
+				internal_cleanup();
+				return false;
+			}
+
+			ULONG bytes_read = 0;
+
+			// Fill buffer from stream
+			if (SUCCEEDED(screenshot_stream->Seek(image_seek_position, STREAM_SEEK_SET, 0))) {
+				if (SUCCEEDED(screenshot_stream->Read(image_blob.get(), image_size.LowPart, &bytes_read))) {
+					image_seek_position.QuadPart += bytes_read;
+
+					std::fstream write_jpeg(jpeg_filename, std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
+					write_jpeg.write((const char*)image_blob.get(), image_size.LowPart);
+					write_jpeg.close();
+					std::cout << "Saved the screenshot to: " << jpeg_filename << std::endl;
+
+					std::string base64_encoded_data;
+					get_base64_encoded_data(image_blob.get(), image_size.LowPart, base64_encoded_data);
+					std::string base64_encoded_with_header(base64_header); // Append this header for timer extension
+					base64_encoded_with_header.append(std::move(base64_encoded_data));
+					std::fstream output_filestream(jpeg_filename_base64, std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
+					output_filestream.write(base64_encoded_with_header.c_str(), base64_encoded_with_header.size());
+					screenshot_data = std::move(base64_encoded_with_header);
+					internal_cleanup();
+					return true;
+				}
+				LOG_ERROR(L"Reading image blob from the screenshot stream");
+				internal_cleanup();
+				return false;
+			}
+			LOG_ERROR(L"Seeking to the beginning of the screenshot stream");
+			internal_cleanup();
+			return false;
+		}
+		LOG_ERROR(L"Seeking to the current location of the screenshot stream");
+		internal_cleanup();
+	}
+	return false;
+}
+
+// Free up the most commonly used resources
+void free_resources() {
+	if (m_screenshot_stream) {
+		m_screenshot_stream->Release();
+		m_screenshot_stream = nullptr;
+	}
+	if (m_desktop_dc) {
+		::ReleaseDC(HWND_DESKTOP, m_desktop_dc);
+		m_desktop_dc = nullptr;
+	}
+	if (m_memory_dc) {
+		::DeleteDC(m_memory_dc);
+		m_memory_dc = nullptr;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <Iphlpapi.h>
 #include <Assert.h>
 #pragma comment(lib, "iphlpapi.lib")
-
-
 
 bool getMAC(std::list<std::wstring>& mac_addresses) {
 
@@ -696,8 +885,372 @@ bool getMAC(std::list<std::wstring>& mac_addresses) {
 	//return mac_addr; // caller must free.
 }
 
-int main()
-{
+#include <dshow.h>
+
+#pragma comment(lib, "strmiids")
+
+//HRESULT EnumerateDevices(REFGUID category, IEnumMoniker** ppEnum)
+//{
+//	// Create the System Device Enumerator.
+//	ICreateDevEnum* vide_input_device_enum;
+//	HRESULT com_result = CoCreateInstance(CLSID_SystemDeviceEnum, NULL,
+//		CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&vide_input_device_enum));
+//
+//	if (SUCCEEDED(com_result))
+//	{
+//		// Create an enumerator for the category.
+//		com_result = vide_input_device_enum->CreateClassEnumerator(category, ppEnum, 0);
+//		if (com_result == S_FALSE)
+//		{
+//			com_result = VFW_E_NOT_FOUND;  // The category is empty. Treat as an error.
+//		}
+//		vide_input_device_enum->Release();
+//	}
+//	return com_result;
+//}
+//
+//
+//void DisplayDeviceInformation(IEnumMoniker* enum_category)
+//{
+//	IMoniker* moniker = NULL;
+//
+//	while (enum_category->Next(1, &moniker, NULL) == S_OK)
+//	{
+//		IPropertyBag* property_bag;
+//		HRESULT com_result = moniker->BindToStorage(0, 0, IID_PPV_ARGS(&property_bag));
+//		if (FAILED(com_result))
+//		{
+//			moniker->Release();
+//			continue;
+//		}
+//
+//		VARIANT var;
+//		VariantInit(&var);
+//
+//		// Get description or friendly name.
+//		com_result = property_bag->Read(L"Description", &var, 0);
+//		if (FAILED(com_result))
+//		{
+//			com_result = property_bag->Read(L"FriendlyName", &var, 0);
+//		}
+//		if (SUCCEEDED(com_result))
+//		{
+//			printf("%S\n", var.bstrVal);
+//			VariantClear(&var);
+//		}
+//
+//		property_bag->Release();
+//		moniker->Release();
+//	}
+//}
+
+void get_webcam_name(std::wstring& webcam_name) {
+	REFGUID category = CLSID_VideoInputDeviceCategory;
+	IEnumMoniker* enum_category = nullptr;
+
+	// Create the System Device Enumerator.
+	ICreateDevEnum* vide_input_device_enum;
+	HRESULT com_result = ::CoCreateInstance(CLSID_SystemDeviceEnum, 
+		nullptr,
+		CLSCTX_INPROC_SERVER, 
+		IID_PPV_ARGS(&vide_input_device_enum));
+	if (SUCCEEDED(com_result)) {
+		// Create an enumerator for the category.
+		if (vide_input_device_enum->CreateClassEnumerator(category, &enum_category, 0) == S_FALSE) {
+			com_result = VFW_E_NOT_FOUND;
+		}
+		vide_input_device_enum->Release();
+		if (com_result == VFW_E_NOT_FOUND)
+			return;
+	}
+
+	IMoniker* moniker = nullptr;
+
+	// Just enumerate the first video input device
+	while(enum_category->Next(1, &moniker, nullptr) == S_OK) {
+		IPropertyBag* property_bag = nullptr;
+		HRESULT com_result = moniker->BindToStorage(nullptr, nullptr, IID_PPV_ARGS(&property_bag));
+		if(FAILED(com_result)) {
+			moniker->Release();
+			continue;
+		}
+
+		VARIANT var;
+		::VariantInit(&var);
+
+		// Get description or friendly name.
+		com_result = property_bag->Read(L"Description", &var, 0);
+		if(FAILED(com_result)) {
+			com_result = property_bag->Read(L"FriendlyName", &var, 0);
+		}
+		if(SUCCEEDED(com_result)) {
+			webcam_name = var.bstrVal;
+			VariantClear(&var);
+		}
+
+		property_bag->Release();
+		moniker->Release();
+	}
+}
+
+typedef LONG NTSTATUS, * PNTSTATUS;
+#define STATUS_SUCCESS (0x00000000)
+
+typedef NTSTATUS(WINAPI* RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
+
+//RTL_OSVERSIONINFOW GetRealOSVersion() {
+//	HMODULE ntddl_module = ::GetModuleHandleW(L"ntdll.dll");
+//	if (ntddl_module) {
+//		RtlGetVersionPtr rtl_get_version_ptr = reinterpret_cast<RtlGetVersionPtr>(::GetProcAddress(ntddl_module, "RtlGetVersion"));
+//		if (rtl_get_version_ptr != nullptr) {
+//			RTL_OSVERSIONINFOW rovi = { 0 };
+//			rovi.dwOSVersionInfoSize = sizeof(rovi);
+//			if (STATUS_SUCCESS == rtl_get_version_ptr(&rovi)) {
+//				return rovi;
+//			}
+//		}
+//	}
+//	RTL_OSVERSIONINFOW rovi = { 0 };
+//	return rovi;
+//}
+typedef LONG NTSTATUS, * PNTSTATUS;
+#define STATUS_SUCCESS (0x00000000)
+typedef NTSTATUS(WINAPI* RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
+std::wstring get_os_version_info() {
+	std::wstring os_version_info;
+	RTL_OSVERSIONINFOW rovi = { 0 };
+	rovi.dwOSVersionInfoSize = sizeof(rovi);
+	HMODULE ntddl_module = ::GetModuleHandleW(L"ntdll.dll");
+	if (ntddl_module) {
+		RtlGetVersionPtr rtl_get_version_ptr = reinterpret_cast<RtlGetVersionPtr>(::GetProcAddress(ntddl_module, "RtlGetVersion"));
+		if (rtl_get_version_ptr != nullptr) {
+			if (STATUS_SUCCESS == rtl_get_version_ptr(&rovi)) {
+				os_version_info = std::wstring(L"win ").append(std::to_wstring(rovi.dwMajorVersion)).append(L".").append(std::to_wstring(rovi.dwMinorVersion));
+			}
+		}
+	}
+	return os_version_info;
+}
+
+class CUnique {
+public:
+	CUnique() {}
+	~CUnique() {}
+
+public:
+	int foo = 12;
+};
+
+
+bool file_exits(const std::wstring& file_name) {
+	std::wifstream file(file_name.c_str());
+	return file.good();
+}
+
+bool create_file(const std::wstring& file_name) {
+	std::wfstream file(file_name.c_str(), std::ios_base::out);
+	return file.good();
+}
+
+
+#include <atlbase.h>
+#include <Propkey.h>
+
+#pragma comment(lib, "version.lib")
+
+// Source: https://stackoverflow.com/questions/53123914/retrieve-file-description-an-application-verqueryvalue
+std::wstring get_app_description(const std::wstring& app_path) {
+	DWORD length = GetFileVersionInfoSize(app_path.data(), nullptr);
+	if (!length) {
+		return L"";
+	}
+
+	std::unique_ptr<BYTE[]> version_info(new BYTE[length]);
+	if (!GetFileVersionInfo(app_path.data(), 0, length, version_info.get())) {
+		return L"";
+	}
+
+	static struct LANGANDCODEPAGE {
+		WORD wLanguage;
+		WORD wCodePage;
+	} *translate;
+
+	UINT translate_length = 0;
+	if (!VerQueryValue(version_info.get(), L"\\VarFileInfo\\Translation",
+		reinterpret_cast<void**>(&translate), &translate_length))
+		return L"";
+
+	for (unsigned int index = 0; index < (translate_length / sizeof(LANGANDCODEPAGE)); index++) {
+		wchar_t sub_block[MAX_PATH * 2];
+		//use sprintf if sprintf_s is not available
+		wsprintf(sub_block, L"\\StringFileInfo\\%04x%04x\\FileDescription", translate[index].wLanguage, translate[index].wCodePage);
+		wchar_t* app_description = nullptr;
+		UINT buffer_length;
+		if (VerQueryValue(version_info.get(), sub_block, reinterpret_cast<void**>(&app_description), &buffer_length)) {
+			return app_description;
+		}
+	}
+	return L"";
+}
+
+
+
+
+
+#include "extension_whitelist.h"
+
+
+
+
+int main() {
+	//std::set<std::wstring> some_set;
+	//some_set.insert(L"foo");
+	//some_set.insert(L"abc");
+	//some_set.insert(L"efg");
+	//some_set.insert(L"foo");
+	//some_set.insert(L"FOO");
+	//some_set.insert(L"abc");
+	//for (const auto& item : some_set) {
+	//	std::wcout << item << std::endl;
+	//}
+
+
+
+
+
+	// Extension whitelist
+	std::unique_ptr<CExtensionWhitelist> extension_list = CExtensionWhitelist::Create(L"list");
+
+	//std::map<int, std::wstring> extension_whitelist;
+	//extension_list->read_whitelist_from_db(extension_whitelist);
+
+	//testing::InitGoogleTest();
+	//testing::InitGoogleMock();
+
+	//RUN_ALL_TESTS();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//::CoInitialize(nullptr);
+
+
+
+
+
+	//capture_screenshots();
+
+
+
+
+
+
+
+
+
+	//if (!::SetCurrentDirectoryW(LR"(C:\Users\Asesh\AppData\Local\CloudFactory\WorkStream\User Data\WorkStreamMonitor\safe_exit)")) {
+	//	std::wcout << L"Failed to changed the directory" << std::endl;
+	//}
+	//else {
+	//	std::wcout << L"Changed the directory successfully" << std::endl;
+	//}
+	//wchar_t file_path[] = LR"(C:\Users\Asesh\AppData\Local\CloudFactory\WorkStream\User Data\WorkStreamMonitor\safe_exit)";
+	//create_file(file_path);
+	//if (file_exits(file_path)) {
+	//	std::wcout << L"File exists" << std::endl;
+	//}
+	//else {
+	//	std::wcout << L"Files doesn't exist" << std::endl;
+	//}
+
+
+
+
+
+
+	//RECT rcScreen;
+
+	//MONITORINFO mi;
+	//mi.cbSize = sizeof(MONITORINFO);
+	//if (GetMonitorInfo(MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTONEAREST),
+	//	&mi))
+	//{
+	//	rcScreen = mi.rcMonitor;
+
+	//}
+	//else
+	//{
+	//	::SystemParametersInfo(SPI_GETWORKAREA, 0, &rcScreen, 0);
+	//}
+	//std::cout << "foo" << std::endl;
+
+
+
+
+
+
+
+
+
+
+
+
+	//std::unique_ptr<CUnique> unique;
+
+	//std::unique_ptr<CUnique> foo;
+	//foo = std::make_unique<CUnique>();
+	//if (foo) {
+	//	std::wcout << L"Object is valid" << std::endl;
+	//}
+	//else {
+	//	std::wcout << L"Object is not valid" << std::endl;
+	//}
+
+
+	//std::wstring webcam_name;
+
+	// Get webcam devices
+	//HRESULT com_result = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	//if (SUCCEEDED(com_result)) {
+	//	get_webcam_name(webcam_name);
+	//	CoUninitialize();
+	//}
+
+	//std::wcout << "Webcam's name: " << webcam_name << std::endl;
+
+
+
+
+	//std::wstring os_version_info = get_os_version_info();
+	//std::wcout << os_version_info << std::endl;
+
+
+
+
+	//DWORDLONG dwlConditionMask = 0;
+	//int op = VER_;
+	//VER_SET_CONDITION(dwlConditionMask, VER_MAJORVERSION, op);
+	//VER_SET_CONDITION(dwlConditionMask, VER_MINORVERSION, op);
+	//OSVERSIONINFOEX os_version_info = { 0 };
+	//os_version_info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	//if (::VerifyVersionInfo(&os_version_info, VER_MAJORVERSION | VER_MINORVERSION, dwlConditionMask)) {
+	//	std::wcout << L"Version exists: " << os_version_info.dwMajorVersion << L", minor: " << os_version_info.dwMinorVersion << std::endl;
+	//}
+
+
+
+
+
 	//std::list<std::wstring> mac_addresses;
 	//getMAC(mac_addresses);
 	//for (const auto& mac_address : mac_addresses) {
@@ -707,7 +1260,7 @@ int main()
 	//::SetConsoleTitle(L"CloudFactory App Usage");
 	//::ShowWindow(::GetConsoleWindow(), SW_MAXIMIZE);
 
-	take_screenshot();
+	//take_screenshot();
 
 	//Aws::SDKOptions options;
 	//Aws::InitAPI(options);
@@ -1114,6 +1667,8 @@ int main()
 
 
 
+
+
 	//static const wchar_t* class_name = L"app_usage";
 	//WNDCLASSEX wx = {};
 	//wx.cbSize = sizeof(WNDCLASSEX);
@@ -1126,7 +1681,6 @@ int main()
 	//	if (!message_window)
 	//		return 1;
 	//}
-
 	//// Set windows event hook to monitor foreground window switches
 	//HWINEVENTHOOK window_event_hook = ::SetWinEventHook(
 	//	EVENT_SYSTEM_FOREGROUND,
@@ -1136,14 +1690,16 @@ int main()
 	//	0,
 	//	0,
 	//	WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS);
-
 	//MSG message = { 0 };
-	//while (::GetMessage(&message, nullptr, 0, 0))
-	//{
+	//while (::GetMessage(&message, nullptr, 0, 0)) {
 	//	::DispatchMessage(&message);
 	//}
-
 	//::UnhookWinEvent(window_event_hook);
+
+
+
+
+
 
 
 	//const char werfault_app_exe_regex[] = "(WerFault.exe$)";
@@ -1169,7 +1725,9 @@ int main()
 
 	//std::cout << app_name.data() << std::endl;
 	//
-	::system("pause");
+	//::system("pause");
+
+	::getchar();
 
 	return 0;
 }

@@ -22,7 +22,7 @@
     <ProjectGuid>{A39AA9BF-34DE-4BB0-B0EC-637A2A40C232}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>cApp_1</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -71,13 +71,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\Asesh\Documents\SDKs;C:\Users\Asesh\Documents\SDKs\SQLite;$(IncludePath);C:\Users\Asesh\Documents\SDKs\googletest\googletest\include;C:\Users\Asesh\Documents\SDKs\googletest\googlemock\include</IncludePath>
+    <SourcePath>C:\Users\Asesh\Documents\SDKs;C:\Users\Asesh\Documents\SDKs\SQLite;$(SourcePath)</SourcePath>
+    <LibraryPath>C:\Users\Asesh\Documents\SDKs\googletest\googletest\bin\lib;C:\Users\Asesh\Documents\SDKs\googletest\googlemock\bin\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\Asesh\Documents\SDKs\aws-sdk-cpp\aws-cpp-sdk-s3\include;C:\Users\Asesh\Documents\SDKs\aws-sdk-cpp\aws-cpp-sdk-core\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Asesh\Documents\SDKs\aws-sdk-cpp\aws-cpp-sdk-s3\include;C:\Users\Asesh\Documents\SDKs\aws-sdk-cpp\aws-cpp-sdk-core\include;$(IncludePath);C:\Users\Asesh\Documents\SDKs\googletest</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -90,10 +93,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>gtestd.lib;gmockd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -127,7 +133,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalManifestDependencies>%(AdditionalManifestDependencies)</AdditionalManifestDependencies>
     </Link>
+    <Manifest>
+      <AdditionalManifestFiles>app.manifest %(AdditionalManifestFiles)</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -149,10 +159,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\SDKs\SQLite\sqlite3.h" />
+    <ClInclude Include="..\..\..\..\SDKs\SQLite\sqlite3ext.h" />
+    <ClInclude Include="extension_whitelist.h" />
+    <ClInclude Include="extension_whitelist_test.h" />
     <ClInclude Include="profiler.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\SDKs\SQLite\shell.c" />
+    <ClCompile Include="..\..\..\..\SDKs\SQLite\sqlite3.c" />
+    <ClCompile Include="extension_whitelist.cpp" />
+    <ClCompile Include="extension_whitelist_test.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="profiler.cpp" />
   </ItemGroup>
